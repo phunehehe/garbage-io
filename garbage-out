@@ -1,0 +1,5 @@
+#!/bin/bash
+
+target="${1:-.}"
+find "$target" -type f -mtime +7 -exec rm {} \;
+find "$target" -type d -empty -exec rmdir {} \;
