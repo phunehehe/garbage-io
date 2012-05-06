@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ar_dir="~/.archive"
+ar_dir="/home/$(whoami)/.archive"
 
 for arg in "$@"
 do
