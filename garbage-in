@@ -1,0 +1,16 @@
+#!/bin/bash
+
+ar_dir="~/.archive"
+
+for arg in "$@"
+do
+    # Move this thing to the archive
+    thing="$(readlink -f "$arg")"
+    dest_dir="$ar_dir$(dirname "$thing")"
+    destination="$dest_dir/$(basename "$thing").$(date +'%Y-%m-%d_%H-%M-%S')"
+    mkdir -p "$dest_dir"
+    mv "$thing" "$destination"
+    find "$destination" -type f -exec touch {} \;
+done
+
+# TODO: Clean up old and useless files and dirs
