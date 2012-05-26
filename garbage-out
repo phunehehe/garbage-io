@@ -1,5 +1,20 @@
 #!/bin/bash
 
 target="${1:-.}"
-find "$target" -type f -mtime +7 -exec rm {} \;
+. garbage-conf
+
+cur_size="$(du -s "$target" | awk '{print $1}')"
+if [[ "$cur_size" -gt "$limit_size" ]]
+then
+    find "$target" -type f -regextype sed -regex ".*.$stamp-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_[0-9]\{2\}-[0-9]\{2\}-[0-9]\{2\}" -printf "%f;%p\n" |
+        perl -pe 's|.*?GARBAGE-||' |
+        sort |
+        cut -d ';' -f 2 | while read garbage
+            do
+                rm "$garbage"
+                cur_size="$(du -s "$target" | awk '{print $1}')"
+                [[ "$cur_size" -lt "$limit_size" ]] && break
+            done
+fi
+
 find "$target" -type d -empty -exec rmdir {} \;
