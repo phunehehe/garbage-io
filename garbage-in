@@ -1,7 +1,6 @@
 #!/bin/bash
 
-ar_dir="/home/$(whoami)/.archive"
-stamp="GARBAGE"
+. garbage-conf
 
 for arg in "$@"
 do
