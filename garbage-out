@@ -9,9 +9,12 @@ then
     find "$target" -type f -regextype sed -regex ".*.$stamp-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_[0-9]\{2\}-[0-9]\{2\}-[0-9]\{2\}" -printf "%f;%p\n" |
         perl -pe 's|.*?GARBAGE-||' |
         sort |
-        cut -d ';' -f 2 | while read garbage
+        while read garbage
             do
-                rm "$garbage"
+                timestamp="$(echo "$garbage" | cut -d ';' -f 1)"
+                path="$(echo "$garbage" | cut -d ';' -f 2)"
+                [[ "$timestamp" -gt "$(date --date=yesterday +'%Y-%m-%d_%H-%M-%S')" ]] && break
+                rm "$path"
                 cur_size="$(du -s "$target" | awk '{print $1}')"
                 [[ "$cur_size" -lt "$limit_size" ]] && break
             done
