@@ -4,7 +4,7 @@ home_dir="/home/$(whoami)"
 
 stamp="GARBAGE"
 ar_dir="$home_dir/.archive"
-limit_size=50
+limit_size=1000
 
 local_conf="$home_dir/.garbage-conf"
 [[ -f "$local_conf" ]] && . "$local_conf"
