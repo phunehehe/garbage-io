@@ -6,14 +6,12 @@ target="${1:-.}"
 cur_size="$(du -s "$target" | awk '{print $1}')"
 if [[ "$cur_size" -gt "$limit_size" ]]
 then
-    find "$target" -type f -regextype sed -regex ".*.$stamp-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_[0-9]\{2\}-[0-9]\{2\}-[0-9]\{2\}" -printf "%f;%p\n" |
-        perl -pe 's|.*?GARBAGE-||' |
-        sort |
-        while read garbage
+    find $target -type f -printf '%C@ %p\0' | sort -z -k 1 -n |
+        while read -d $'\0' garbage
             do
-                timestamp="$(echo "$garbage" | cut -d ';' -f 1)"
-                path="$(echo "$garbage" | cut -d ';' -f 2)"
-                [[ "$timestamp" -gt "$(date --date=yesterday +'%Y-%m-%d_%H-%M-%S')" ]] && break
+                timestamp="$(echo "$garbage" | cut -d ' ' -f 1)"
+                path="$(echo "$garbage" | cut -d ' ' -f 2-)"
+                [[ "$timestamp" -lt "$(date --date=yesterday +'%s')" ]] && break
                 rm "$path"
                 cur_size="$(du -s "$target" | awk '{print $1}')"
                 [[ "$cur_size" -lt "$limit_size" ]] && break
