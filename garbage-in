@@ -2,15 +2,27 @@
 
 . garbage-conf
 
-for arg in "$@"
-do
-    # Move this thing to the archive
-    thing="$(readlink -f "$arg")"
-    dest_dir="$ar_dir$(dirname "$thing")"
-    destination="$dest_dir/$(basename "$thing").$stamp-$(date +'%Y-%m-%d_%H-%M-%S')"
-    mkdir -p "$dest_dir"
+move_bg(){
+    thing="$1"
+    destination="$2"
     mv "$thing" "$destination"
     find "$destination" -type f -exec touch {} \;
-done
+}
 
-# TODO: Clean up old and useless files and dirs
+for arg in "$@"
+do
+    thing="$(readlink -f "$arg")"
+    dir=$(dirname "$thing")
+    name=$(basename "$thing")
+
+    # Make this thing invisible
+    new_name=".$name.$stamp-$(date +'%Y-%m-%d_%H-%M-%S')"
+    new_thing="$dir/$new_name"
+    mv "$thing" "$new_thing"
+
+    # Move this thing to the archive
+    dest_dir="$ar_dir$dir"
+    destination="$dest_dir/$new_name"
+    mkdir -p "$dest_dir"
+    move_bg "$new_thing" "$destination" &
+done
