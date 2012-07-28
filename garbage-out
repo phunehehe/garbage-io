@@ -20,4 +20,4 @@ then
             done
 fi
 
-find "$target" -type d -empty -exec rmdir {} \;
+find "$target" -type d -empty -delete
