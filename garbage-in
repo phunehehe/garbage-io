@@ -1,6 +1,7 @@
 #!/bin/bash
 
-. garbage-conf
+bin_dir="$(dirname "$0")"
+. "$bin_dir/garbage-conf"
 
 move_bg(){
     thing="$1"
