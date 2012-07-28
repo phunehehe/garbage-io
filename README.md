@@ -23,6 +23,6 @@ I want that!
 Firstly remember this is very alpha, so edges are rough.
 
 1. Clone the project: `git clone https://github.com/phunehehe/garbage-io.git`
-1. Tweak the default settings: `cp /path/to/garbage-io/garbage-conf $HOME/.garbage-conf`. `limit_size` the number of disk blocks used for the archive. Change it to something like 524288, which is roughly 500MB if you have a block size of 4096.
+1. Tweak the default settings: `cp /path/to/garbage-io/garbage-conf $HOME/.garbage-conf`. `limit_size` the number of disk blocks used for the archive. Change it to something like 524288, which is roughly 500MB if you have a block size of 4096. Also remove the self reference at the end.
 1. Let `garbage-in` replace `rm`: `alias rm=/path/to/garbage-io/garbage-in`
 1. Create a cron for `garbage-out`: `0 0 * * * /path/to/garbage-io/garbage-out /home/your_username/.archive`
