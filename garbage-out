@@ -4,6 +4,7 @@ target="${1:-.}"
 
 bin_dir="$(dirname "$0")"
 . "$bin_dir/garbage-conf"
+yesterday="$(date --date=yesterday +'%s')"
 
 cur_size="$(du -s "$target" | awk '{print $1}')"
 if [[ "$cur_size" -gt "$limit_size" ]]
@@ -13,7 +14,7 @@ then
             do
                 timestamp="$(echo "$garbage" | cut -d ' ' -f 1)"
                 path="$(echo "$garbage" | cut -d ' ' -f 2-)"
-                [[ "$timestamp" -lt "$(date --date=yesterday +'%s')" ]] && break
+                [[ "$(bc <<< "$timestamp > $yesterday")" ]] && break
                 rm "$path"
                 cur_size="$(du -s "$target" | awk '{print $1}')"
                 [[ "$cur_size" -lt "$limit_size" ]] && break
