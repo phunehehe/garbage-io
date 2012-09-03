@@ -1,5 +1,9 @@
 #!/bin/bash
 
+log() {
+    echo "$@"
+}
+
 target="${1:-.}"
 
 bin_dir="$(dirname "$0")"
@@ -9,16 +13,27 @@ yesterday="$(date --date=yesterday +'%s')"
 cur_size="$(du -s "$target" | awk '{print $1}')"
 if [[ "$cur_size" -gt "$limit_size" ]]
 then
+    log "Cleaning $target..."
     find $target -type f -printf '%C@ %p\0' | sort -z -k 1 -n |
         while read -d $'\0' garbage
             do
                 timestamp="$(echo "$garbage" | cut -d ' ' -f 1)"
                 path="$(echo "$garbage" | cut -d ' ' -f 2-)"
-                [[ "$(bc <<< "$timestamp > $yesterday")" ]] && break
+                if [[ "$(bc <<< "$timestamp > $yesterday")" ]]
+                then
+                    log "File $path is newer than 24 hours. Stopping."
+                    break
+                fi
                 rm "$path"
                 cur_size="$(du -s "$target" | awk '{print $1}')"
-                [[ "$cur_size" -lt "$limit_size" ]] && break
+                if [[ "$cur_size" -lt "$limit_size" ]]
+                then
+                    log "Size of target is now $cur_size < $limit_size."
+                    break
+                fi
             done
+else
+    log "Size of $target is $cur_size < $limit_size. Not cleaning."
 fi
 
 find "$target" -type d -empty -delete
