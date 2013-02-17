@@ -12,6 +12,13 @@ move_bg(){
 
 for arg in "$@"
 do
+    if [[ -L "$arg" ]]
+    then
+        # No use to backup a symlink
+        "rm" "$arg"
+        continue
+    fi
+
     thing="$(readlink -f "$arg")"
     dir=$(dirname "$thing")
     name=$(basename "$thing")
