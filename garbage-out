@@ -7,13 +7,18 @@ log() {
     echo "$@"
 }
 
+size_of() {
+    du -s "$1" | awk '{print $1}'
+}
+
+
 target="${1:-.}"
 
 bin_dir="$(dirname "$0")"
 . "$bin_dir/garbage-conf"
 yesterday="$(date --date=yesterday +'%s')"
 
-cur_size="$(du -s "$target" | awk '{print $1}')"
+cur_size=$(size_of "$target")
 if [[ "$cur_size" -gt "$limit_size" ]]
 then
     log "Cleaning $target..."
@@ -22,13 +27,14 @@ then
             do
                 timestamp="$(echo "$garbage" | cut -d ' ' -f 1)"
                 path="$(echo "$garbage" | cut -d ' ' -f 2-)"
+                garbage_size=$(size_of "$path")
                 if [[ "$(bc <<< "$timestamp > $yesterday")" -eq 1 ]]
                 then
                     log "File $path is newer than 24 hours. Stopping."
                     break
                 fi
                 rm "$path"
-                cur_size="$(du -s "$target" | awk '{print $1}')"
+                cur_size=$((cur_size-garbage_size))
                 if [[ "$cur_size" -lt "$limit_size" ]]
                 then
                     log "Size of target is now $cur_size < $limit_size."

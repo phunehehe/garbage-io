@@ -13,4 +13,7 @@ limit_size=1000000
 #limit_size=100000000
 
 local_conf="$home_dir/.garbage-conf"
-[[ -f "$local_conf" ]] && . "$local_conf"
+if [[ -f "$local_conf" ]]
+then
+    . "$local_conf"
+fi
