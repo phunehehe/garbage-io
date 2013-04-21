@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 
 # We don't use `-r`
 eval set -- $(getopt -o r -n "$0" -- "$@")
