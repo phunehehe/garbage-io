@@ -1,5 +1,17 @@
 #!/bin/bash
 
+
+# We don't use `-r`
+eval set -- $(getopt -o r -n "$0" -- "$@")
+
+while true ; do
+    case "$1" in
+        -r) echo 'Eating up unnecessary option `-r`' ; shift ;;
+        --) shift ; break ;;
+    esac
+done
+
+
 bin_dir="$(dirname "$0")"
 . "$bin_dir/garbage-conf"
 
