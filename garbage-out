@@ -19,7 +19,7 @@ then
             do
                 timestamp="$(echo "$garbage" | cut -d ' ' -f 1)"
                 path="$(echo "$garbage" | cut -d ' ' -f 2-)"
-                if [[ "$(bc <<< "$timestamp > $yesterday")" ]]
+                if [[ "$(bc <<< "$timestamp > $yesterday")" -eq 1 ]]
                 then
                     log "File $path is newer than 24 hours. Stopping."
                     break
