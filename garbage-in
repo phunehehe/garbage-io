@@ -44,7 +44,7 @@ do
     mv "$thing" "$new_thing"
 
     # Move this thing to the archive
-    dest_dir="$ar_dir$dir"
+    dest_dir="$ar_dir/$dir"
     destination="${dest_dir}/${name}_${now}"
     mkdir -p "$dest_dir"
     move_bg "$new_thing" "$destination" &
