@@ -1,9 +1,7 @@
 #!/bin/bash
 
-home_dir="/home/$(whoami)"
-
 stamp="GARBAGE"
-ar_dir="$home_dir/.archive"
+ar_dir="$HOME/.archive"
 
 # 1GB
 limit_size=1000000
@@ -12,7 +10,7 @@ limit_size=1000000
 # 100GB
 #limit_size=100000000
 
-local_conf="$home_dir/.garbage-conf"
+local_conf="$HOME/.garbage-conf"
 if [[ -f "$local_conf" ]]
 then
     . "$local_conf"
