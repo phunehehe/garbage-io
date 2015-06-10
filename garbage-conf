@@ -1,14 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -efu
 
 stamp="GARBAGE"
-ar_dir="$HOME/.archive"
+ar_dir="$HOME/.garbage"
 
 # 1GB
 limit_size=1000000
-# 10GB
-#limit_size=10000000
-# 100GB
-#limit_size=100000000
 
 local_conf="$HOME/.garbage-conf"
 if [[ -f "$local_conf" ]]
