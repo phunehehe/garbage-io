@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -efu
 
 
 log() {
@@ -12,35 +12,44 @@ size_of() {
 }
 
 
-target="${1:-.}"
+target="$1"
+yesterday="$(date --date=yesterday +'%s')"
+
+# 1GB
+limit_size=1000000
 
 bin_dir="$(dirname "$0")"
 . "$bin_dir/garbage-conf"
-yesterday="$(date --date=yesterday +'%s')"
+
 
 cur_size=$(size_of "$target")
+
 if [[ "$cur_size" -gt "$limit_size" ]]
 then
+
     log "Cleaning $target..."
-    find $target -type f -printf '%C@ %p\0' | sort -z -k 1 -n |
-        while read -d $'\0' garbage
-            do
-                timestamp="$(echo "$garbage" | cut -d ' ' -f 1)"
-                path="$(echo "$garbage" | cut -d ' ' -f 2-)"
-                garbage_size=$(size_of "$path")
-                if [[ "$(bc <<< "$timestamp > $yesterday")" -eq 1 ]]
-                then
-                    log "File $path is newer than 24 hours. Stopping."
-                    break
-                fi
-                rm "$path"
-                cur_size=$((cur_size-garbage_size))
-                if [[ "$cur_size" -lt "$limit_size" ]]
-                then
-                    log "Size of target is now $cur_size < $limit_size."
-                    break
-                fi
-            done
+    find "$target" -not -writable -exec chmod +w {} +
+
+    find "$target" -type f -printf '%C@ %p\0' \
+    | sort -z -k 1 -n \
+    | while read -d $'\0' garbage
+      do
+          timestamp="$(echo "$garbage" | cut -d ' ' -f 1)"
+          path="$(echo "$garbage" | cut -d ' ' -f 2-)"
+          garbage_size=$(size_of "$path")
+          if [[ "$(bc <<< "$timestamp > $yesterday")" -eq 1 ]]
+          then
+              log "File $path is newer than 24 hours. Stopping."
+              break
+          fi
+          "rm" -f "$path"
+          cur_size=$((cur_size-garbage_size))
+          if [[ "$cur_size" -lt "$limit_size" ]]
+          then
+              log "Size of target is now $cur_size < $limit_size."
+              break
+          fi
+      done
 else
     log "Size of $target is $cur_size < $limit_size. Not cleaning."
 fi
