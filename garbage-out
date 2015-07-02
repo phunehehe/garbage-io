@@ -28,7 +28,7 @@ if [[ "$cur_size" -gt "$limit_size" ]]
 then
 
     log "Cleaning $target..."
-    find "$target" -not -writable -exec chmod +w {} +
+    find "$target" -not -type l -not -writable -exec chmod +w {} +
 
     find "$target" -type f -printf '%C@ %p\0' \
     | sort -z -k 1 -n \
