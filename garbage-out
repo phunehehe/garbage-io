@@ -11,7 +11,7 @@ size_of() {
 }
 
 
-target="$1"
+target=$(readlink --canonicalize "$1")
 yesterday="$(date --date=yesterday +'%s')"
 
 # 1GB
@@ -29,6 +29,7 @@ if [[ "$cur_size" -gt "$limit_size" ]]
 then
 
     log "Cleaning $target..."
+    find "$target" -not -type l -not -user "$USER" -exec chown "$USER" {} +
     find "$target" -not -type l -not -writable -exec chmod +w {} +
 
     < <(find "$target" -type f -printf '%C@ %p\0' \
