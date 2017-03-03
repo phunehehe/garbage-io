@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-
-set -efu
-
-stamp="GARBAGE"
-ar_dir="$HOME/.garbage"
+set -efuo pipefail
 
 # 1GB
 limit_size=1000000

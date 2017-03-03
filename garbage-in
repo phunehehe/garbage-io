@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
+set -efuo pipefail
 
-set -e
+
+garbage_dir=$HOME/.garbage
 
 
 # We don't use `-r`
-eval set -- $(getopt -o r -n "$0" -- "$@")
+eval set -- "$(getopt -o r -n "$0" -- "$@")"
 
 while true ; do
     case "$1" in
-        -r) echo 'Eating up unnecessary option `-r`' ; shift ;;
+        -r)
+            # shellcheck disable=SC2016
+            echo 'Eating up unnecessary option `-r`' ; shift ;;
         --) shift ; break ;;
     esac
 done
 
 
 bin_dir="$(dirname "$0")"
+
+# shellcheck source=/dev/null
 . "$bin_dir/garbage-conf"
 
 move_bg(){
@@ -39,12 +45,12 @@ do
     now=$(date +'%Y-%m-%d_%H-%M-%S')
 
     # Make this thing invisible
-    new_name=".$name.$stamp-$now"
+    new_name=".$name.GARBAGE-$now"
     new_thing="$dir/$new_name"
     mv "$thing" "$new_thing"
 
     # Move this thing to the archive
-    dest_dir="$ar_dir/$dir"
+    dest_dir="$garbage_dir/$dir"
     destination="${dest_dir}/${name}_${now}"
     mkdir -p "$dest_dir"
     move_bg "$new_thing" "$destination" &
