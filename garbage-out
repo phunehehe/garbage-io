@@ -32,8 +32,6 @@ then
     find "$target" -not -type l -not -user "$USER" -exec chown "$USER" {} +
     find "$target" -not -type l -not -writable -exec chmod +w {} +
 
-    < <(find "$target" -type f -printf '%C@ %p\0' \
-      | sort -z -k 1 -n)
     while read -r -d $'\0' garbage
     do
         timestamp="$(echo "$garbage" | cut -d ' ' -f 1)"
@@ -51,7 +49,9 @@ then
             log "Size of target is now $cur_size < $limit_size."
             break
         fi
-    done
+    done < <(
+        find "$target" -type f -printf '%C@ %p\0' \
+      | sort -z -k 1 -n)
 else
     log "Size of $target is $cur_size < $limit_size. Not cleaning."
 fi
